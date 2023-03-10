@@ -1,2 +1,2 @@
-# News-Cover
+# Proyecto-News
  
