@@ -1,22 +1,25 @@
 const express = require('express');
+const { tokenSign } = require('../helpers/generateToken')
 const router = express.Router();
 const user = require('../Models/userModel');
 
 
 //Post to create a new user
-router.post('/users', (req, res) => {
+router.post('/users', async (req, res) => {
 
     const newUser = new user.model(req.body);
+    const tokenSession = await tokenSign(newUser);
     newUser.save((error) => {
         if (error) {
             return res.status(500).send(error);
         }
-        res.status(201).json({
-            _id: newUser._id,
-            email: newUser.email,
-            firstName: newUser.firstName,
-            lastName: newUser.lastName
-        });
+
+        res.status(201).send({
+            data: newUser,
+            tokenSession           
+        }
+            
+        );
     });
 });
 
