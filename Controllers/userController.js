@@ -1,5 +1,6 @@
 const express = require('express');
 const { tokenSign } = require('../helpers/generateToken')
+const { encrypt } = require('../helpers/passwordBcrypt')
 const router = express.Router();
 const user = require('../Models/userModel');
 
@@ -7,7 +8,14 @@ const user = require('../Models/userModel');
 //Post to create a new user
 router.post('/users', async (req, res) => {
 
-    const newUser = new user.model(req.body);
+    const { email, password, firstName, lastName } = req.body;
+    const passwordHash = await encrypt(password)
+    const newUser = new user.model({
+        email,
+        password: passwordHash,
+        firstName,
+        lastName
+    });
     const tokenSession = await tokenSign(newUser);
     newUser.save((error) => {
         if (error) {

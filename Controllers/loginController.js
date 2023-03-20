@@ -1,5 +1,6 @@
 const express = require('express');
 const { tokenSign } = require('../helpers/generateToken')
+const { compare } = require('../helpers/passwordBcrypt')
 const router = express.Router();
 const userModel = require('../Models/userModel');
 
@@ -15,12 +16,12 @@ router.post('/login', async (req, res) => {
             res.send({ error: 'User not found' })
         }
 
-        //const checkPassword = await compare(password, user.password) //TODO: Contraseña!
-        const checkPassword = true;
-        //TODO JWT 👉
-        const tokenSession = await tokenSign(user) //TODO: 2d2d2d2d2d2d2
+        const checkPassword = await compare(password, user.password)
+        //const checkPassword = true;
+        //JWT 
+        const tokenSession = await tokenSign(user)
 
-        if (checkPassword) { //TODO Contraseña es correcta!
+        if (checkPassword) { 
             res.send({
                 tokenSession
             })
