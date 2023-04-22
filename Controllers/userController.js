@@ -1,12 +1,11 @@
 const express = require('express');
-const { tokenSign } = require('../helpers/generateToken')
-const { encrypt } = require('../helpers/passwordBcrypt')
-const router = express.Router();
+const { tokenSign } = require('../helpers/generateToken');
+const { encrypt } = require('../helpers/passwordBcrypt');
 const user = require('../Models/userModel');
 
 
 //Post to create a new user
-router.post('/users', async (req, res) => {
+const createUser = async (req, res) => {
 
     const { email, password, firstName, lastName } = req.body;
     const passwordHash = await encrypt(password)
@@ -29,22 +28,22 @@ router.post('/users', async (req, res) => {
             
         );
     });
-});
+};
 
 
 
 //Get all users 
-router.get('/users', (req, res) => {
+const getAllUser = (req, res) => {
     user.model.find({}, (error, users) => {
         if (error) {
             return res.status(500).send(error);
         }
         res.status(200).json(users);
     });
-});
+};
 
 //Get one user by id
-router.get('/users/:id', (req, res) => {
+const getUserById = (req, res) => {
     user.model.findById(req.params.id, (error, users) => {
         if (error) {
             return res.status(500).send(error);
@@ -58,11 +57,11 @@ router.get('/users/:id', (req, res) => {
             lastName: users.lastName
         });
     });
-});
+};
 
 
 //update user information
-router.put('/users/:id', (req, res) => {
+const updateUser = (req, res) => {
     user.model.findByIdAndUpdate(req.params.id, req.body, {new: true}, (error, users) => {
         if (error) {
             return res.status(500).send(error);
@@ -77,10 +76,10 @@ router.put('/users/:id', (req, res) => {
             lastName: users.lastName
         });
     });
-});
+};
 
 //delete user
-router.delete('/users/:id', (req, res) => {
+const deleteUser = (req, res) => {
     user.model.findByIdAndRemove(req.params.id, (error, users) => {
         if (error) {
             return res.status(500).send(error);
@@ -90,7 +89,7 @@ router.delete('/users/:id', (req, res) => {
         }
         res.status(200).send('User deleted successfully');
     });
-});
+};
 
 
-module.exports = router;
+module.exports = {createUser, getAllUser, getUserById, updateUser, deleteUser};

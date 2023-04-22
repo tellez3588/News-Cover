@@ -1,34 +1,39 @@
 const express = require('express');
-const router = express.Router();
+const { parse } = require('../Helpers/process')
 const news = require('../Models/newsModel');
-
+const newsSource = require('../Models/newsSourceModel');
 
 //Post to create a news
-router.post('/news', (req, res) => {
+const createNew = async (req, res) => {
 
-    const nNews = new news.model(req.body);
-    nNews.save((error) => {
-        if (error) {
-            return res.status(500).send(error);
-        }
-        res.status(201).json(nNews);
+    const userId = req.params.userId
+    const newsD = await news.model.deleteMany({ userId: userId });
+    newsSource.model.find({}, (error, source) => {
+        
+        source.forEach(element => {
+            if(element.userId === userId){
+                parse(element.rssUrl, element.category,element._id, element.userId)
+            }
+        });
+        res.send('successfully');
     });
-});
+
+};
 
 
 
 //Get all news 
-router.get('/news', (req, res) => {
-    news.model.find({}, (error, nNews) => {
+const getAllNews = (req, res) => {
+    news.model.find({},(error, nNews) => {
         if (error) {
             return res.status(500).send(error);
         }
         res.status(200).json(nNews);
     });
-});
+};
 
 //Get one news by id
-router.get('/news/:id', (req, res) => {
+const getNewById = (req, res) => {
     news.model.findById(req.params.id, (error, nNews) => {
         if (error) {
             return res.status(500).send(error);
@@ -38,11 +43,11 @@ router.get('/news/:id', (req, res) => {
         }
         res.status(200).json(nNews);
     });
-});
+};
 
 
 //update newsSource information
-router.put('/news/:id', (req, res) => {
+const updateNew = (req, res) => {
     news.model.findByIdAndUpdate(req.params.id, req.body, {new: true}, (error, nNews) => {
         if (error) {
             return res.status(500).send(error);
@@ -52,10 +57,10 @@ router.put('/news/:id', (req, res) => {
         }
         res.status(200).json(nNews);
     });
-});
+};
 
 //delete news
-router.delete('/news/:id', (req, res) => {
+const deleteNew = (req, res) => {
     news.model.findByIdAndRemove(req.params.id, (error, nNews) => {
         if (error) {
             return res.status(500).send(error);
@@ -65,7 +70,7 @@ router.delete('/news/:id', (req, res) => {
         }
         res.status(200).send('news deleted successfully');
     });
-});
+};
 
 
-module.exports = router;
+module.exports = {createNew, getAllNews, getNewById, updateNew, deleteNew};

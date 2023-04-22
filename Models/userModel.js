@@ -5,10 +5,7 @@ const Schema = mongoose.Schema;
   password: {type: String},
   firstName: {type: String},
   lastName: { type: String},
-  role: [{
-    ref: 'role',
-    type: mongoose.Schema.Types.ObjectId
-  }],
+  role: { type: String}
  });
 
 //method to encrypt password

@@ -7,7 +7,8 @@ const Schema = mongoose.Schema;
   date: {type: String},
   newsSourceId: {type: String},
   userId: {type: String},
-  categoryId: {type: String}
+  category: {type: String},
+  image: {type: String}
  });
  module.exports = {
    "model" : mongoose.model('news', newsSchema),
